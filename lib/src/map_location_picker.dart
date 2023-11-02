@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,6 +13,8 @@ import 'logger.dart';
 
 class MapLocationPicker extends StatefulWidget {
   final Function(LatLng?)? onTapMarkers;
+
+  final List<dynamic>? locations;
 
   /// Padding around the map
   final EdgeInsets padding;
@@ -78,6 +81,10 @@ class MapLocationPicker extends StatefulWidget {
 
   /// On location permission callback
   final bool hasLocationPermission;
+
+  final Function()? getSelectedLocations;
+
+  final Function()? deleteLocations;
 
   /// detect location button click callback
   final Function()? getLocation;
@@ -200,77 +207,80 @@ class MapLocationPicker extends StatefulWidget {
   /// Defaults to 0
   final int minCharsForSuggestions;
 
-  const MapLocationPicker(
-      {Key? key,
-      this.desiredAccuracy = LocationAccuracy.high,
-      required this.apiKey,
-      this.geoCodingBaseUrl,
-      this.geoCodingHttpClient,
-      this.geoCodingApiHeaders,
-      this.language,
-      this.locationType = const [],
-      this.resultType = const [],
-      this.minMaxZoomPreference = const MinMaxZoomPreference(0, 16),
-      this.padding = const EdgeInsets.all(0),
-      this.compassEnabled = true,
-      this.liteModeEnabled = false,
-      this.topCardMargin = const EdgeInsets.all(8),
-      this.topCardColor,
-      this.topCardShape = const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-      ),
-      this.borderRadius = const BorderRadius.all(Radius.circular(12)),
-      this.searchHintText = "Start typing to search",
-      this.bottomCardShape = const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-      ),
-      this.bottomCardMargin = const EdgeInsets.fromLTRB(8, 8, 8, 16),
-      this.bottomCardIcon = const Icon(Icons.send),
-      this.bottomCardTooltip = "Continue with this location",
-      this.bottomCardColor,
-      this.hasLocationPermission = true,
-      this.getLocation,
-      this.onSuggestionSelected,
-      this.onNext,
-      this.currentLatLng = const LatLng(28.8993468, 76.6250249),
-      this.hideBackButton = false,
-      this.popOnNextButtonTaped = false,
-      this.backButton,
-      this.hideMoreOptions = false,
-      this.dialogTitle = 'You can also use the following options',
-      this.placesHttpClient,
-      this.placesApiHeaders,
-      this.placesBaseUrl,
-      this.sessionToken,
-      this.offset,
-      this.origin,
-      this.location,
-      this.radius,
-      this.region,
-      this.fields = const [],
-      this.types = const [],
-      this.components = const [],
-      this.strictbounds = false,
-      this.hideSuggestionsOnKeyboardHide = false,
-      this.mapType = MapType.normal,
-      this.searchController,
-      this.additionalMarkers,
-      this.bottom = true,
-      this.left = true,
-      this.maintainBottomViewPadding = false,
-      this.minimum = EdgeInsets.zero,
-      this.right = true,
-      this.top = true,
-      this.hideLocationButton = false,
-      this.hideMapTypeButton = false,
-      this.hideBottomCard = false,
-      this.onDecodeAddress,
-      this.focusNode,
-      this.fabTooltip = 'My Location',
-      this.fabIcon = Icons.my_location,
-      this.minCharsForSuggestions = 0,
-      this.onTapMarkers})
-      : super(key: key);
+  const MapLocationPicker({
+    Key? key,
+    this.desiredAccuracy = LocationAccuracy.high,
+    required this.apiKey,
+    this.geoCodingBaseUrl,
+    this.geoCodingHttpClient,
+    this.geoCodingApiHeaders,
+    this.language,
+    this.locationType = const [],
+    this.resultType = const [],
+    this.minMaxZoomPreference = const MinMaxZoomPreference(0, 16),
+    this.padding = const EdgeInsets.all(0),
+    this.compassEnabled = true,
+    this.liteModeEnabled = false,
+    this.topCardMargin = const EdgeInsets.all(8),
+    this.topCardColor,
+    this.topCardShape = const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+    ),
+    this.borderRadius = const BorderRadius.all(Radius.circular(12)),
+    this.searchHintText = "Start typing to search",
+    this.bottomCardShape = const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+    ),
+    this.bottomCardMargin = const EdgeInsets.fromLTRB(8, 8, 8, 16),
+    this.bottomCardIcon = const Icon(Icons.send),
+    this.bottomCardTooltip = "Continue with this location",
+    this.bottomCardColor,
+    this.hasLocationPermission = true,
+    this.getLocation,
+    this.onSuggestionSelected,
+    this.onNext,
+    this.currentLatLng = const LatLng(28.8993468, 76.6250249),
+    this.hideBackButton = false,
+    this.popOnNextButtonTaped = false,
+    this.backButton,
+    this.hideMoreOptions = false,
+    this.dialogTitle = 'You can also use the following options',
+    this.placesHttpClient,
+    this.placesApiHeaders,
+    this.placesBaseUrl,
+    this.sessionToken,
+    this.offset,
+    this.origin,
+    this.location,
+    this.radius,
+    this.region,
+    this.fields = const [],
+    this.types = const [],
+    this.components = const [],
+    this.strictbounds = false,
+    this.hideSuggestionsOnKeyboardHide = false,
+    this.mapType = MapType.normal,
+    this.searchController,
+    this.additionalMarkers,
+    this.bottom = true,
+    this.left = true,
+    this.maintainBottomViewPadding = false,
+    this.minimum = EdgeInsets.zero,
+    this.right = true,
+    this.top = true,
+    this.hideLocationButton = false,
+    this.hideMapTypeButton = false,
+    this.hideBottomCard = false,
+    this.onDecodeAddress,
+    this.focusNode,
+    this.fabTooltip = 'My Location',
+    this.fabIcon = Icons.my_location,
+    this.minCharsForSuggestions = 0,
+    this.onTapMarkers,
+    this.locations,
+    this.getSelectedLocations,
+    this.deleteLocations,
+  }) : super(key: key);
 
   @override
   State<MapLocationPicker> createState() => _MapLocationPickerState();
@@ -523,6 +533,85 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                         }
                       },
                       child: Icon(widget.fabIcon),
+                    ),
+                  ),
+                if (widget.locations != null)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FloatingActionButton(
+                      tooltip: widget.fabTooltip,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      onPressed: () async {
+                        widget.getSelectedLocations?.call();
+                        await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              actions: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                              title: const Text('Locations'),
+                              content: SizedBox(
+                                height: 500,
+                                width: 500,
+                                child: widget.locations!.isNotEmpty
+                                    ? ListView.builder(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        padding: const EdgeInsets.all(8),
+                                        itemCount: widget.locations!.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return SizedBox(
+                                            height: 60,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                SizedBox(
+                                                  width: 210,
+                                                  child: Text(
+                                                    widget.locations![index]
+                                                            .locationName ??
+                                                        '',
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  ),
+                                                  onPressed: () {
+                                                    widget.deleteLocations
+                                                        ?.call();
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Container(),
+                              ),
+                            );
+                          },
+                        );
+                        setState(() {});
+                      },
+                      child: const Icon(
+                        Icons.list,
+                        color: Colors.white,
+                        size: 32,
+                      ),
                     ),
                   ),
                 if (!widget.hideBottomCard)
