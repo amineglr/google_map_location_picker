@@ -535,85 +535,85 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       child: Icon(widget.fabIcon),
                     ),
                   ),
-                if (widget.locations != null)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: FloatingActionButton(
-                      tooltip: widget.fabTooltip,
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      onPressed: () async {
-                        widget.getSelectedLocations?.call();
-                        await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              actions: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.close,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FloatingActionButton(
+                    tooltip: widget.fabTooltip,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    onPressed: () async {
+                      widget.getSelectedLocations?.call();
+                      await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            actions: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.red,
                                 ),
-                              ],
-                              title: const Text('Locations'),
-                              content: SizedBox(
-                                height: 500,
-                                width: 500,
-                                child: widget.locations!.isNotEmpty
-                                    ? ListView.builder(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        padding: const EdgeInsets.all(8),
-                                        itemCount: widget.locations!.length,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return SizedBox(
-                                            height: 60,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: [
-                                                SizedBox(
-                                                  width: 210,
-                                                  child: Text(
-                                                    widget.locations![index]
-                                                            .locationName ??
-                                                        '',
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  icon: const Icon(
-                                                    Icons.delete,
-                                                    color: Colors.red,
-                                                  ),
-                                                  onPressed: () {
-                                                    widget.deleteLocations
-                                                        ?.call(index);
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      )
-                                    : Container(),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
                               ),
-                            );
-                          },
-                        );
-                        setState(() {});
-                      },
-                      child: const Icon(
-                        Icons.list,
-                        color: Colors.white,
-                        size: 32,
-                      ),
+                            ],
+                            title: const Text('Locations'),
+                            content: SizedBox(
+                              height: 500,
+                              width: 500,
+                              child: widget.locations!.isNotEmpty
+                                  ? ListView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      padding: const EdgeInsets.all(8),
+                                      itemCount: widget.locations!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return SizedBox(
+                                          height: 60,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              SizedBox(
+                                                width: 210,
+                                                child: Text(
+                                                  widget.locations![index]
+                                                          .locationName ??
+                                                      '',
+                                                ),
+                                              ),
+                                              IconButton(
+                                                icon: const Icon(
+                                                  Icons.delete,
+                                                  color: Colors.red,
+                                                ),
+                                                onPressed: () {
+                                                  widget.deleteLocations
+                                                      ?.call(index);
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : Container(),
+                            ),
+                          );
+                        },
+                      );
+                      setState(() {});
+                    },
+                    child: const Icon(
+                      Icons.list,
+                      color: Colors.white,
+                      size: 32,
                     ),
                   ),
+                ),
                 if (!widget.hideBottomCard)
                   Card(
                     margin: widget.bottomCardMargin,
