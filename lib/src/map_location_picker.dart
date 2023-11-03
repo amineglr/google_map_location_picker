@@ -84,7 +84,7 @@ class MapLocationPicker extends StatefulWidget {
 
   final Function()? getSelectedLocations;
 
-  final Function()? deleteLocations;
+  final Function(int)? deleteLocations;
 
   /// detect location button click callback
   final Function()? getLocation;
@@ -592,7 +592,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                                                   ),
                                                   onPressed: () {
                                                     widget.deleteLocations
-                                                        ?.call();
+                                                        ?.call(index);
                                                   },
                                                 ),
                                               ],
