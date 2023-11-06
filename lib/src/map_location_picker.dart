@@ -13,8 +13,15 @@ import 'logger.dart';
 
 class MapLocationPicker extends StatefulWidget {
   final Function(LatLng?)? onTapMarkers;
+  final Function()? onTapPolylines;
+  final Function()? onTapPolygones;
+  final Function()? onTapCircles;
 
   final List<dynamic>? locations;
+
+  final bool hideLocationList;
+
+  final bool hideAreasList;
 
   /// Padding around the map
   final EdgeInsets padding;
@@ -179,6 +186,10 @@ class MapLocationPicker extends StatefulWidget {
   /// Add your own custom markers
   final Map<String, LatLng>? additionalMarkers;
 
+  final Map<String, List<LatLng>>? additionalPolylines;
+  final Map<String, List<LatLng>>? additionalPolygons;
+  final Map<String, LatLng>? additionalCircles;
+
   /// Safe area parameters (default: true)
   final bool bottom;
   final bool left;
@@ -280,6 +291,14 @@ class MapLocationPicker extends StatefulWidget {
     this.locations,
     this.getSelectedLocations,
     this.deleteLocations,
+    this.hideLocationList = false,
+    this.additionalPolylines,
+    this.additionalPolygons,
+    this.additionalCircles,
+    this.onTapPolylines,
+    this.onTapPolygones,
+    this.onTapCircles,
+    this.hideAreasList = false,
   }) : super(key: key);
 
   @override
@@ -313,6 +332,35 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final additionalCircles = widget.additionalCircles?.entries
+            .map(
+              (e) => Circle(
+                circleId: CircleId(e.key),
+                center: e.value,
+              ),
+            )
+            .toList() ??
+        [];
+    final additionalPolylines = widget.additionalPolylines?.entries
+            .map(
+              (e) => Polyline(
+                polylineId: PolylineId(e.key),
+                points: e.value,
+              ),
+            )
+            .toList() ??
+        [];
+
+    final additionalPolygons = widget.additionalPolygons?.entries
+            .map(
+              (e) => Polygon(
+                polygonId: PolygonId(e.key),
+                points: e.value,
+              ),
+            )
+            .toList() ??
+        [];
+
     final additionalMarkers = widget.additionalMarkers?.entries
             .map(
               (e) => Marker(
@@ -322,6 +370,29 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             )
             .toList() ??
         [];
+    final polygons = Set<Polygon>.from(additionalPolygons);
+    polygons.add(
+      Polygon(
+        polygonId: PolygonId("one"),
+        points: [_initialPosition],
+      ),
+    );
+
+    final polylines = Set<Polyline>.from(additionalPolylines);
+    polylines.add(
+      Polyline(
+        polylineId: PolylineId("one"),
+        points: [_initialPosition],
+      ),
+    );
+
+    final circles = Set<Circle>.from(additionalCircles);
+    circles.add(
+      Circle(
+        circleId: CircleId("one"),
+        center: _initialPosition,
+      ),
+    );
 
     final markers = Set<Marker>.from(additionalMarkers);
     markers.add(
@@ -377,6 +448,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               compassEnabled: widget.compassEnabled,
               liteModeEnabled: widget.liteModeEnabled,
               mapType: widget.mapType,
+              polygons: polygons,
+              polylines: polylines,
+              circles: circles,
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -495,6 +569,48 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       ),
                     ),
                   ),
+                if (!widget.hideAreasList)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FloatingActionButton(
+                      tooltip: widget.fabTooltip,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      onPressed: () async {
+                        widget.onTapCircles?.call();
+                        setState(() {});
+                      },
+                      child: Icon(Icons.circle),
+                    ),
+                  ),
+                if (!widget.hideAreasList)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FloatingActionButton(
+                      tooltip: widget.fabTooltip,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      onPressed: () async {
+                        widget.onTapPolygones?.call();
+                        setState(() {});
+                      },
+                      child: Icon(Icons.square),
+                    ),
+                  ),
+                if (!widget.hideAreasList)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FloatingActionButton(
+                      tooltip: widget.fabTooltip,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      onPressed: () async {
+                        widget.onTapPolylines?.call();
+                        setState(() {});
+                      },
+                      child: Icon(Icons.polyline),
+                    ),
+                  ),
                 if (!widget.hideLocationButton)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -535,85 +651,86 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       child: Icon(widget.fabIcon),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: FloatingActionButton(
-                    tooltip: widget.fabTooltip,
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    onPressed: () async {
-                      widget.getSelectedLocations?.call();
-                      await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            actions: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: Colors.red,
+                if (!widget.hideLocationList)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FloatingActionButton(
+                      tooltip: widget.fabTooltip,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      onPressed: () async {
+                        widget.getSelectedLocations?.call();
+                        await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              actions: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
                                 ),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
+                              ],
+                              title: const Text('Locations'),
+                              content: SizedBox(
+                                height: 500,
+                                width: 500,
+                                child: widget.locations!.isNotEmpty
+                                    ? ListView.builder(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        padding: const EdgeInsets.all(8),
+                                        itemCount: widget.locations!.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return SizedBox(
+                                            height: 60,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                SizedBox(
+                                                  width: 210,
+                                                  child: Text(
+                                                    widget.locations![index]
+                                                            .locationName ??
+                                                        '',
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  ),
+                                                  onPressed: () {
+                                                    widget.deleteLocations
+                                                        ?.call(index);
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Container(),
                               ),
-                            ],
-                            title: const Text('Locations'),
-                            content: SizedBox(
-                              height: 500,
-                              width: 500,
-                              child: widget.locations!.isNotEmpty
-                                  ? ListView.builder(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      padding: const EdgeInsets.all(8),
-                                      itemCount: widget.locations!.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return SizedBox(
-                                          height: 60,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              SizedBox(
-                                                width: 210,
-                                                child: Text(
-                                                  widget.locations![index]
-                                                          .locationName ??
-                                                      '',
-                                                ),
-                                              ),
-                                              IconButton(
-                                                icon: const Icon(
-                                                  Icons.delete,
-                                                  color: Colors.red,
-                                                ),
-                                                onPressed: () {
-                                                  widget.deleteLocations
-                                                      ?.call(index);
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    )
-                                  : Container(),
-                            ),
-                          );
-                        },
-                      );
-                      setState(() {});
-                    },
-                    child: const Icon(
-                      Icons.list,
-                      color: Colors.white,
-                      size: 32,
+                            );
+                          },
+                        );
+                        setState(() {});
+                      },
+                      child: const Icon(
+                        Icons.list,
+                        color: Colors.white,
+                        size: 32,
+                      ),
                     ),
                   ),
-                ),
                 if (!widget.hideBottomCard)
                   Card(
                     margin: widget.bottomCardMargin,
