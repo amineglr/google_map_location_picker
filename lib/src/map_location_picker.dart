@@ -586,7 +586,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     padding: const EdgeInsets.all(8.0),
                     child: FloatingActionButton(
                       tooltip: widget.fabTooltip,
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: widget.isPoint
+                          ? Colors.red
+                          : Theme.of(context).primaryColor,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       onPressed: () async {
                         widget.pointButtonPressed?.call();
@@ -600,7 +602,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     padding: const EdgeInsets.all(8.0),
                     child: FloatingActionButton(
                       tooltip: widget.fabTooltip,
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: widget.isCircle
+                          ? Colors.red
+                          : Theme.of(context).primaryColor,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       onPressed: () async {
                         widget.circleButtonPressed?.call();
@@ -614,7 +618,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     padding: const EdgeInsets.all(8.0),
                     child: FloatingActionButton(
                       tooltip: widget.fabTooltip,
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: widget.isPolygon
+                          ? Colors.red
+                          : Theme.of(context).primaryColor,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       onPressed: () async {
                         widget.polygonButtonPressed?.call();
@@ -628,7 +634,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     padding: const EdgeInsets.all(8.0),
                     child: FloatingActionButton(
                       tooltip: widget.fabTooltip,
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: widget.isPolyline
+                          ? Colors.red
+                          : Theme.of(context).primaryColor,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       onPressed: () async {
                         widget.polylineButtonPressed?.call();
