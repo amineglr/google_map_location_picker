@@ -352,9 +352,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     final additionalCircles = widget.additionalCircles?.entries
             .map(
               (e) => Circle(
-                circleId: CircleId(e.key),
-                center: e.value,
-              ),
+                  circleId: CircleId(e.key), center: e.value, radius: 5000),
             )
             .toList() ??
         [];
@@ -434,14 +432,17 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     lng: position.longitude,
                   ),
                 );
-                widget.onTapMarkers?.call(position);
+
                 if (widget.isPolygon) {
                   widget.onTapPolygones?.call(position);
                 } else if (widget.isPolyline) {
                   widget.onTapPolylines?.call(position);
                 } else if (widget.isCircle) {
                   widget.onTapCircles?.call(position);
+                } else {
+                  widget.onTapMarkers?.call(position);
                 }
+
                 setState(() {});
               },
               onMapCreated: (GoogleMapController controller) =>
