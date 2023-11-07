@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
@@ -12,10 +13,20 @@ import 'autocomplete_view.dart';
 import 'logger.dart';
 
 class MapLocationPicker extends StatefulWidget {
+  final bool isPolygon;
+  final bool isPolyline;
+  final bool isCircle;
+
   final Function(LatLng?)? onTapMarkers;
-  final Function()? onTapPolylines;
-  final Function()? onTapPolygones;
-  final Function()? onTapCircles;
+  final Function(LatLng?)? onTapPolylines;
+  final Function(LatLng?)? onTapPolygones;
+  final Function(LatLng?)? onTapCircles;
+
+  final Function()? circleButtonPressed;
+
+  final Function()? polylineButtonPressed;
+
+  final Function()? polygonButtonPressed;
 
   final List<dynamic>? locations;
 
@@ -299,6 +310,12 @@ class MapLocationPicker extends StatefulWidget {
     this.onTapPolygones,
     this.onTapCircles,
     this.hideAreasList = false,
+    this.circleButtonPressed,
+    this.polylineButtonPressed,
+    this.polygonButtonPressed,
+    this.isPolygon = false,
+    this.isPolyline = false,
+    this.isCircle = false,
   }) : super(key: key);
 
   @override
@@ -371,28 +388,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             .toList() ??
         [];
     final polygons = Set<Polygon>.from(additionalPolygons);
-    polygons.add(
-      Polygon(
-        polygonId: PolygonId("one"),
-        points: [_initialPosition],
-      ),
-    );
 
     final polylines = Set<Polyline>.from(additionalPolylines);
-    polylines.add(
-      Polyline(
-        polylineId: PolylineId("one"),
-        points: [_initialPosition],
-      ),
-    );
 
     final circles = Set<Circle>.from(additionalCircles);
-    circles.add(
-      Circle(
-        circleId: CircleId("one"),
-        center: _initialPosition,
-      ),
-    );
 
     final markers = Set<Marker>.from(additionalMarkers);
     markers.add(
@@ -436,6 +435,13 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   ),
                 );
                 widget.onTapMarkers?.call(position);
+                if (widget.isPolygon) {
+                  widget.onTapPolygones?.call(position);
+                } else if (widget.isPolyline) {
+                  widget.onTapPolylines?.call(position);
+                } else if (widget.isCircle) {
+                  widget.onTapCircles?.call(position);
+                }
                 setState(() {});
               },
               onMapCreated: (GoogleMapController controller) =>
@@ -577,7 +583,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       onPressed: () async {
-                        widget.onTapCircles?.call();
+                        widget.circleButtonPressed?.call();
                         setState(() {});
                       },
                       child: Icon(Icons.circle),
@@ -591,7 +597,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       onPressed: () async {
-                        widget.onTapPolygones?.call();
+                        widget.polygonButtonPressed?.call();
                         setState(() {});
                       },
                       child: Icon(Icons.square),
@@ -605,7 +611,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       backgroundColor: Theme.of(context).primaryColor,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       onPressed: () async {
-                        widget.onTapPolylines?.call();
+                        widget.polylineButtonPressed?.call();
                         setState(() {});
                       },
                       child: Icon(Icons.polyline),
