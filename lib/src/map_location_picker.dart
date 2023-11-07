@@ -16,6 +16,7 @@ class MapLocationPicker extends StatefulWidget {
   final bool isPolygon;
   final bool isPolyline;
   final bool isCircle;
+  final bool isPoint;
 
   final Function(LatLng?)? onTapMarkers;
   final Function(LatLng?)? onTapPolylines;
@@ -27,6 +28,8 @@ class MapLocationPicker extends StatefulWidget {
   final Function()? polylineButtonPressed;
 
   final Function()? polygonButtonPressed;
+
+  final Function()? pointButtonPressed;
 
   final List<dynamic>? locations;
 
@@ -316,6 +319,8 @@ class MapLocationPicker extends StatefulWidget {
     this.isPolygon = false,
     this.isPolyline = false,
     this.isCircle = false,
+    this.isPoint = true,
+    this.pointButtonPressed,
   }) : super(key: key);
 
   @override
@@ -439,7 +444,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   widget.onTapPolylines?.call(position);
                 } else if (widget.isCircle) {
                   widget.onTapCircles?.call(position);
-                } else {
+                } else if (widget.isPoint) {
                   widget.onTapMarkers?.call(position);
                 }
 
@@ -574,6 +579,20 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                           ],
                         ),
                       ),
+                    ),
+                  ),
+                if (!widget.hideAreasList)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FloatingActionButton(
+                      tooltip: widget.fabTooltip,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      onPressed: () async {
+                        widget.pointButtonPressed?.call();
+                        setState(() {});
+                      },
+                      child: Icon(Icons.control_point),
                     ),
                   ),
                 if (!widget.hideAreasList)
