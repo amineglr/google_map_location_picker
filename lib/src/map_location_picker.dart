@@ -357,16 +357,19 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     final additionalCircles = widget.additionalCircles?.entries
             .map(
               (e) => Circle(
-                  circleId: CircleId(e.key), center: e.value, radius: 5000),
+                  circleId: CircleId(e.key),
+                  center: e.value,
+                  radius: 5000,
+                  fillColor: Colors.grey),
             )
             .toList() ??
         [];
     final additionalPolylines = widget.additionalPolylines?.entries
             .map(
               (e) => Polyline(
-                polylineId: PolylineId(e.key),
-                points: e.value,
-              ),
+                  polylineId: PolylineId(e.key),
+                  points: e.value,
+                  color: Colors.green),
             )
             .toList() ??
         [];
@@ -374,9 +377,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     final additionalPolygons = widget.additionalPolygons?.entries
             .map(
               (e) => Polygon(
-                polygonId: PolygonId(e.key),
-                points: e.value,
-              ),
+                  polygonId: PolygonId(e.key),
+                  points: e.value,
+                  fillColor: Colors.yellow),
             )
             .toList() ??
         [];
