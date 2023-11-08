@@ -13,6 +13,7 @@ import 'autocomplete_view.dart';
 import 'logger.dart';
 
 class MapLocationPicker extends StatefulWidget {
+  final List<double>? radiusList;
   final bool isPolygon;
   final bool isPolyline;
   final bool isCircle;
@@ -321,6 +322,7 @@ class MapLocationPicker extends StatefulWidget {
     this.isCircle = false,
     this.isPoint = true,
     this.pointButtonPressed,
+    this.radiusList,
   }) : super(key: key);
 
   @override
@@ -359,7 +361,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               (e) => Circle(
                   circleId: CircleId(e.key),
                   center: e.value,
-                  radius: 5000,
+                  radius: widget.radiusList?[int.parse(e.key)] ?? 1.0,
                   fillColor: Colors.grey),
             )
             .toList() ??
