@@ -118,7 +118,7 @@ class MapLocationPicker extends StatefulWidget {
   final Function(GeocodingResult?)? onNext;
 
   /// When tap on map decode address callback function
-  final Function(GeocodingResult?)? onDecodeAddress;
+  final Function(GeocodingResult?, LatLng)? onDecodeAddress;
 
   /// Show back button (default: true)
   final bool hideBackButton;
@@ -904,9 +904,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
         }
         return;
       }
+      final latLng = LatLng(location.lat, location.lng);
       _address = response.results.first.formattedAddress ?? "";
       _geocodingResult = response.results.first;
-      widget.onDecodeAddress?.call(_geocodingResult);
+      widget.onDecodeAddress?.call(_geocodingResult, latLng);
       if (response.results.length > 1) {
         _geocodingResultList = response.results;
       }
