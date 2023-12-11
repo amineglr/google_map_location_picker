@@ -461,7 +461,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               markers: markers,
               myLocationButtonEnabled: false,
               myLocationEnabled: true,
-              zoomControlsEnabled: false,
+              zoomControlsEnabled: true,
               padding: widget.padding,
               compassEnabled: widget.compassEnabled,
               liteModeEnabled: widget.liteModeEnabled,
